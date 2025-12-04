@@ -3,6 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { ArrowUpRight, ArrowDownRight, Users, Zap, DollarSign, Eye, Cpu, Database } from 'lucide-react';
 import { analyzeTrendData } from '../services/gemini';
 import { MetricCardProps, GeneratedContent } from '../types';
+import { useApiKey } from '../hooks/useApiKey';
 
 const data = [
   { name: 'Mon', value: 4000, organic: 2400 },
@@ -44,6 +45,7 @@ const Dashboard: React.FC = () => {
     const [aiInsight, setAiInsight] = useState<string>("Initializing neural analysis of market vectors...");
     const [historyCount, setHistoryCount] = useState(0);
     const [lastActive, setLastActive] = useState<string>("N/A");
+    const { isConfigured } = useApiKey();
 
     useEffect(() => {
         // Load Real Stats from Local Storage
@@ -58,12 +60,18 @@ const Dashboard: React.FC = () => {
         }
 
         const fetchInsight = async () => {
+            if (!isConfigured) {
+                setAiInsight("AI analysis unavailable. Configure API key in Settings to enable strategic insights.");
+                return;
+            }
+            
             const context = "Weekly traffic shows 45% growth in organic channels. User retention stable at 88%.";
             const result = await analyzeTrendData(context);
             setAiInsight(result);
         };
+        
         fetchInsight();
-    }, []);
+    }, [isConfigured]);
 
     return (
         <div className="p-8 space-y-8 animate-fadeIn pb-20">

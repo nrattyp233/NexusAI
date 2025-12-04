@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Send, FileText, Share2, Copy, Check, Archive, Clock, ArrowRight, Trash } from 'lucide-react';
+import { Send, FileText, Share2, Copy, Check, Archive, Clock, ArrowRight, Trash, Key } from 'lucide-react';
 import { ContentType, GeneratedContent } from '../types';
 import { generateStrategicContent } from '../services/gemini';
+import { useApiKey } from '../hooks/useApiKey';
 
 const Generator: React.FC = () => {
     const [topic, setTopic] = useState('');
@@ -11,6 +12,7 @@ const Generator: React.FC = () => {
     const [copied, setCopied] = useState(false);
     const [history, setHistory] = useState<GeneratedContent[]>([]);
     const [viewHistory, setViewHistory] = useState(false);
+    const { isConfigured } = useApiKey();
 
     useEffect(() => {
         const saved = localStorage.getItem('nexus_history');
@@ -72,7 +74,15 @@ const Generator: React.FC = () => {
             <header className="mb-8 flex justify-between items-end">
                 <div>
                     <h2 className="text-3xl font-bold text-white mb-2">Neural Forge</h2>
-                    <p className="text-slate-400">Autonomous content generation module.</p>
+                    <div className="flex items-center space-x-3">
+                        <p className="text-slate-400">Autonomous content generation module.</p>
+                        {!isConfigured && (
+                            <div className="flex items-center space-x-1 text-xs px-2 py-1 bg-amber-500/20 text-amber-400 rounded-full">
+                                <Key size={12} />
+                                <span>API Key Required</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <button 
                     onClick={() => setViewHistory(!viewHistory)}

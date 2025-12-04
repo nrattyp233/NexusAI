@@ -39,4 +39,5 @@ export interface UserSettings {
   role: string;
   emailNotifications: boolean;
   autoSave: boolean;
+  apiKey?: string;
 }

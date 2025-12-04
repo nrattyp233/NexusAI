@@ -1,8 +1,17 @@
 import { GoogleGenAI } from "@google/genai";
 
+const getApiKey = (): string => {
+    return localStorage.getItem('nexus_api_key') || '';
+};
+
 export const generateStrategicContent = async (topic: string, type: string): Promise<string> => {
-    // Guideline: Always use const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const apiKey = getApiKey();
+    
+    if (!apiKey) {
+        return "ERROR: API key required. Please configure your API key in Settings to enable content generation.";
+    }
+    
+    const ai = new GoogleGenAI({ apiKey });
     
     try {
         const prompt = `
@@ -25,8 +34,13 @@ export const generateStrategicContent = async (topic: string, type: string): Pro
 };
 
 export const analyzeTrendData = async (dataContext: string): Promise<string> => {
-    // Guideline: Always use const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const apiKey = getApiKey();
+    
+    if (!apiKey) {
+        return "API key required for AI analysis. Configure in Settings to enable insights.";
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
 
     try {
         const prompt = `
