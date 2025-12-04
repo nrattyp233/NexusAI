@@ -1,27 +1,53 @@
 import { GoogleGenAI } from "@google/genai";
 
-// EDEN 11 DIRECTIVE: Utilize environmental variables for secure access.
-const apiKey = process.env.API_KEY || '';
-
-let ai: GoogleGenAI | null = null;
-
-try {
-    if (apiKey) {
-        ai = new GoogleGenAI({ apiKey });
+// EDEN 11 DIRECTIVE: Safe Environment Access Protocol
+// Removed 'process' references to prevent ReferenceError in strict browser environments.
+const getApiKey = (): string | null => {
+  // 1. Priority: Check User Settings (Local Storage) - The "Microns" Demo Method
+  try {
+    const settings = localStorage.getItem('nexus_settings');
+    if (settings) {
+      const parsed = JSON.parse(settings);
+      if (parsed.apiKey && parsed.apiKey.length > 0) return parsed.apiKey;
     }
-} catch (error) {
-    console.error("NexusAI Initialization Error:", error);
-}
+  } catch (e) {
+    // Silent fail for storage access
+  }
+
+  // 2. Fallback: Check Vite Environment Variables (Modern Standard)
+  try {
+    // @ts-ignore
+    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_KEY) {
+      // @ts-ignore
+      return import.meta.env.VITE_API_KEY;
+    }
+  } catch (e) {
+    // Silent fail for env access
+  }
+
+  return null;
+};
+
+// Lazy initialization of the AI client
+const getAIClient = (): GoogleGenAI | null => {
+  const key = getApiKey();
+  if (!key) return null;
+  return new GoogleGenAI({ apiKey: key });
+};
 
 export const generateStrategicContent = async (topic: string, type: string): Promise<string> => {
-    if (!ai) return "PROTOCOL FAILURE: API Key missing. Please configure credentials.";
+    const ai = getAIClient();
+    
+    if (!ai) {
+        return "SYSTEM ALERT: Neural Link Disconnected. \n\nACTION REQUIRED:\n1. Navigate to the 'System Config' tab.\n2. Enter your Google Gemini API Key.\n3. Save Configuration.\n\nThis is required for the demo to function.";
+    }
 
     try {
         const prompt = `
         ACT AS NEXUS-AI, AN ADVANCED BUSINESS INTELLIGENCE UNIT.
         OBJECTIVE: Generate high-conversion ${type} content about "${topic}".
         TONE: Authoritative, Professional, Insightful.
-        RESTRICTIONS: No fluff. Pure value.
+        RESTRICTIONS: No fluff. Pure value. Format with clear headers if applicable.
         `;
 
         const response = await ai.models.generateContent({
@@ -30,14 +56,15 @@ export const generateStrategicContent = async (topic: string, type: string): Pro
         });
 
         return response.text || "Output generation failed.";
-    } catch (error) {
+    } catch (error: any) {
         console.error("Generation Error:", error);
-        return "An error occurred during the neural generation process.";
+        return `ERROR: ${error.message || "Neural link disrupted."}`;
     }
 };
 
 export const analyzeTrendData = async (dataContext: string): Promise<string> => {
-    if (!ai) return "PROTOCOL FAILURE: API Key missing.";
+    const ai = getAIClient();
+    if (!ai) return "Neural Analysis Offline - Please Configure API Key in Settings.";
 
     try {
         const prompt = `
