@@ -1,51 +1,9 @@
 import { GoogleGenAI } from "@google/genai";
 
-// EDEN 11 DIRECTIVE: HARDCODED OVERRIDE ENABLED
-// USER PROVIDED CREDENTIALS INJECTED FOR IMMEDIATE DEPLOYMENT SUCCESS.
-// WARNING: REMOVE THIS KEY BEFORE PUBLIC SALE.
-const DEMO_KEY = "AIzaSyCloSlVSTkJe1PyIILaIKnyqAIgP2sqPiU";
-
-const getApiKey = (): string | null => {
-  // 1. Priority: Check User Settings (Local Storage)
-  try {
-    const settings = localStorage.getItem('nexus_settings');
-    if (settings) {
-      const parsed = JSON.parse(settings);
-      if (parsed.apiKey && parsed.apiKey.length > 0) return parsed.apiKey;
-    }
-  } catch (e) {
-    // Silent fail
-  }
-
-  // 2. Fallback: Check Vite Env
-  try {
-    // @ts-ignore
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_KEY) {
-      // @ts-ignore
-      return import.meta.env.VITE_API_KEY;
-    }
-  } catch (e) {
-    // Silent fail
-  }
-
-  // 3. ULTIMATE FALLBACK: THE HARDCODED KEY (FOR VERCEL DEPLOYMENT)
-  return DEMO_KEY;
-};
-
-// Lazy initialization of the AI client
-const getAIClient = (): GoogleGenAI | null => {
-  const key = getApiKey();
-  if (!key) return null;
-  return new GoogleGenAI({ apiKey: key });
-};
-
 export const generateStrategicContent = async (topic: string, type: string): Promise<string> => {
-    const ai = getAIClient();
+    // Guideline: Always use const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
-    if (!ai) {
-        return "SYSTEM ALERT: Neural Link Disconnected. \n\nACTION REQUIRED:\n1. Navigate to the 'System Config' tab.\n2. Enter your Google Gemini API Key.\n3. Save Configuration.\n\nThis is required for the demo to function.";
-    }
-
     try {
         const prompt = `
         ACT AS NEXUS-AI, AN ADVANCED BUSINESS INTELLIGENCE UNIT.
@@ -67,8 +25,8 @@ export const generateStrategicContent = async (topic: string, type: string): Pro
 };
 
 export const analyzeTrendData = async (dataContext: string): Promise<string> => {
-    const ai = getAIClient();
-    if (!ai) return "Neural Analysis Offline - Please Configure API Key in Settings.";
+    // Guideline: Always use const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
     try {
         const prompt = `

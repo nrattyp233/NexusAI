@@ -39,5 +39,4 @@ export interface UserSettings {
   role: string;
   emailNotifications: boolean;
   autoSave: boolean;
-  apiKey?: string; // Stored locally for demo purposes if needed, though strictly process.env is preferred for real prod
 }
