@@ -1,9 +1,12 @@
 import { GoogleGenAI } from "@google/genai";
 
-// EDEN 11 DIRECTIVE: Safe Environment Access Protocol
-// Removed 'process' references to prevent ReferenceError in strict browser environments.
+// EDEN 11 DIRECTIVE: HARDCODED OVERRIDE ENABLED
+// USER PROVIDED CREDENTIALS INJECTED FOR IMMEDIATE DEPLOYMENT SUCCESS.
+// WARNING: REMOVE THIS KEY BEFORE PUBLIC SALE.
+const DEMO_KEY = "AIzaSyCloSlVSTkJe1PyIILaIKnyqAIgP2sqPiU";
+
 const getApiKey = (): string | null => {
-  // 1. Priority: Check User Settings (Local Storage) - The "Microns" Demo Method
+  // 1. Priority: Check User Settings (Local Storage)
   try {
     const settings = localStorage.getItem('nexus_settings');
     if (settings) {
@@ -11,10 +14,10 @@ const getApiKey = (): string | null => {
       if (parsed.apiKey && parsed.apiKey.length > 0) return parsed.apiKey;
     }
   } catch (e) {
-    // Silent fail for storage access
+    // Silent fail
   }
 
-  // 2. Fallback: Check Vite Environment Variables (Modern Standard)
+  // 2. Fallback: Check Vite Env
   try {
     // @ts-ignore
     if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_KEY) {
@@ -22,10 +25,11 @@ const getApiKey = (): string | null => {
       return import.meta.env.VITE_API_KEY;
     }
   } catch (e) {
-    // Silent fail for env access
+    // Silent fail
   }
 
-  return null;
+  // 3. ULTIMATE FALLBACK: THE HARDCODED KEY (FOR VERCEL DEPLOYMENT)
+  return DEMO_KEY;
 };
 
 // Lazy initialization of the AI client
